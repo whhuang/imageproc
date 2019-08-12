@@ -147,7 +147,7 @@ where
 
     for y in 0..height {
         for x in 0..width {
-            let current = unsafe { image.unsafe_get_pixel(x, y) };
+            let current = unsafe { image.get_pixel(x, y) };
             if current == background {
                 continue;
             }
@@ -156,9 +156,9 @@ where
 
             if x > 0 {
                 // West
-                let pixel = unsafe { image.unsafe_get_pixel(x - 1, y) };
+                let pixel = unsafe { image.get_pixel(x - 1, y) };
                 if pixel == current {
-                    let label = unsafe { out.unsafe_get_pixel(x - 1, y)[0] };
+                    let label = unsafe { out.get_pixel(x - 1, y)[0] };
                     adj_labels[num_adj] = label;
                     num_adj += 1;
                 }
@@ -166,9 +166,9 @@ where
 
             if y > 0 {
                 // North
-                let pixel = unsafe { image.unsafe_get_pixel(x, y - 1) };
+                let pixel = unsafe { image.get_pixel(x, y - 1) };
                 if pixel == current {
-                    let label = unsafe { out.unsafe_get_pixel(x, y - 1)[0] };
+                    let label = unsafe { out.get_pixel(x, y - 1)[0] };
                     adj_labels[num_adj] = label;
                     num_adj += 1;
                 }
@@ -176,18 +176,18 @@ where
                 if conn == Connectivity::Eight {
                     if x > 0 {
                         // North West
-                        let pixel = unsafe { image.unsafe_get_pixel(x - 1, y - 1) };
+                        let pixel = unsafe { image.get_pixel(x - 1, y - 1) };
                         if pixel == current {
-                            let label = unsafe { out.unsafe_get_pixel(x - 1, y - 1)[0] };
+                            let label = unsafe { out.get_pixel(x - 1, y - 1)[0] };
                             adj_labels[num_adj] = label;
                             num_adj += 1;
                         }
                     }
                     if x < width - 1 {
                         // North East
-                        let pixel = unsafe { image.unsafe_get_pixel(x + 1, y - 1) };
+                        let pixel = unsafe { image.get_pixel(x + 1, y - 1) };
                         if pixel == current {
-                            let label = unsafe { out.unsafe_get_pixel(x + 1, y - 1)[0] };
+                            let label = unsafe { out.get_pixel(x + 1, y - 1)[0] };
                             adj_labels[num_adj] = label;
                             num_adj += 1;
                         }
@@ -197,7 +197,7 @@ where
 
             if num_adj == 0 {
                 unsafe {
-                    out.unsafe_put_pixel(x, y, Luma([next_label]));
+                    out.put_pixel(x, y, Luma([next_label]));
                 }
                 next_label += 1;
             } else {
@@ -206,7 +206,7 @@ where
                     min_label = cmp::min(min_label, adj_labels[n]);
                 }
                 unsafe {
-                    out.unsafe_put_pixel(x, y, Luma([min_label]));
+                    out.put_pixel(x, y, Luma([min_label]));
                 }
                 for n in 0..num_adj {
                     forest.union(min_label as usize, adj_labels[n] as usize);
@@ -223,10 +223,10 @@ where
         for y in 0..height {
             for x in 0..width {
                 let label = {
-                    if image.unsafe_get_pixel(x, y) == background {
+                    if image.get_pixel(x, y) == background {
                         continue;
                     }
-                    out.unsafe_get_pixel(x, y)[0]
+                    out.get_pixel(x, y)[0]
                 };
                 let root = forest.root(label as usize);
                 let mut output_label = *output_labels.get_unchecked(root);
@@ -235,7 +235,7 @@ where
                     count += 1;
                 }
                 *output_labels.get_unchecked_mut(root) = output_label;
-                out.unsafe_put_pixel(x, y, Luma([output_label]));
+                out.put_pixel(x, y, Luma([output_label]));
             }
         }
     }

@@ -77,7 +77,7 @@ where
             let out_channels = out.get_pixel_mut(x, y).channels_mut();
             for c in 0..P::channel_count() {
                 out_channels[c as usize] = f(unsafe {
-                    *image.unsafe_get_pixel(x, y).channels().get_unchecked(
+                    *image.get_pixel(x, y).channels().get_unchecked(
                         c as usize,
                     )
                 });
@@ -125,8 +125,8 @@ where
     for y in 0..height {
         for x in 0..width {
             unsafe {
-                let pix = image.unsafe_get_pixel(x, y);
-                out.unsafe_put_pixel(x, y, f(pix));
+                let pix = image.get_pixel(x, y);
+                out.put_pixel(x, y, f(pix));
             }
         }
     }
@@ -184,9 +184,9 @@ where
     for y in 0..height {
         for x in 0..width {
             unsafe {
-                let p = image1.unsafe_get_pixel(x, y);
-                let q = image2.unsafe_get_pixel(x, y);
-                out.unsafe_put_pixel(x, y, f(p, q));
+                let p = image1.get_pixel(x, y);
+                let q = image2.get_pixel(x, y);
+                out.put_pixel(x, y, f(p, q));
             }
         }
     }
@@ -233,8 +233,8 @@ where
     for y in 0..height {
         for x in 0..width {
             unsafe {
-                let pix = image.unsafe_get_pixel(x, y);
-                out.unsafe_put_pixel(x, y, f(x, y, pix));
+                let pix = image.get_pixel(x, y);
+                out.put_pixel(x, y, f(x, y, pix));
             }
         }
     }

@@ -40,7 +40,7 @@ pub fn box_filter(image: &GrayImage, x_radius: u32, y_radius: u32) -> Image<Luma
         row_running_sum(image, y, &mut row_buffer, x_radius);
         let val = row_buffer[(2 * x_radius) as usize] / kernel_width;
         unsafe {
-            out.unsafe_put_pixel(0, y, Luma([val as u8]));
+            out.put_pixel(0, y, Luma([val as u8]));
         }
         for x in 1..width {
             // TODO: This way we pay rounding errors for each of the
@@ -49,7 +49,7 @@ pub fn box_filter(image: &GrayImage, x_radius: u32, y_radius: u32) -> Image<Luma
             let l = (x - 1) as usize;
             let val = (row_buffer[u] - row_buffer[l]) / kernel_width;
             unsafe {
-                out.unsafe_put_pixel(x, y, Luma([val as u8]));
+                out.put_pixel(x, y, Luma([val as u8]));
             }
         }
     }
@@ -59,14 +59,14 @@ pub fn box_filter(image: &GrayImage, x_radius: u32, y_radius: u32) -> Image<Luma
         column_running_sum(&out, x, &mut col_buffer, y_radius);
         let val = col_buffer[(2 * y_radius) as usize] / kernel_height;
         unsafe {
-            out.unsafe_put_pixel(x, 0, Luma([val as u8]));
+            out.put_pixel(x, 0, Luma([val as u8]));
         }
         for y in 1..height {
             let u = (y + 2 * y_radius) as usize;
             let l = (y - 1) as usize;
             let val = (col_buffer[u] - col_buffer[l]) / kernel_height;
             unsafe {
-                out.unsafe_put_pixel(x, y, Luma([val as u8]));
+                out.put_pixel(x, y, Luma([val as u8]));
             }
         }
     }
@@ -122,7 +122,7 @@ impl<'a, K: Num + Copy + 'a> Kernel<'a, K> {
                         let x_p = min(width - 1, max(0, x + k_x - k_width / 2)) as u32;
                         accumulate(
                             &mut acc,
-                            unsafe { &image.unsafe_get_pixel(x_p, y_p) },
+                            image.get_pixel(x_p, y_p),
                             unsafe { *self.data.get_unchecked((k_y * k_width + k_x) as usize) }
                         );
                     }
@@ -237,7 +237,7 @@ where
                 for (i, k) in kernel.iter().enumerate() {
                     let x_unchecked = (x as i32) + i as i32 - k_width / 2;
                     let x_p = max(0, min(x_unchecked, width as i32 - 1)) as u32;
-                    let p = unsafe { image.unsafe_get_pixel(x_p, y) };
+                    let p = unsafe { *image.get_pixel(x_p, y) };
                     accumulate(&mut acc, &p, *k);
                 }
 
@@ -260,7 +260,7 @@ where
             for (i, k) in kernel.iter().enumerate() {
                 let x_unchecked = (x as i32) + i as i32 - k_width / 2;
                 let x_p = max(0, x_unchecked) as u32;
-                let p = unsafe { image.unsafe_get_pixel(x_p, y) };
+                let p = unsafe { *image.get_pixel(x_p, y) };
                 accumulate(&mut acc, &p, *k);
             }
 
@@ -276,7 +276,7 @@ where
             for (i, k) in kernel.iter().enumerate() {
                 let x_unchecked = (x as i32) + i as i32 - k_width / 2;
                 let x_p = x_unchecked as u32;
-                let p = unsafe { image.unsafe_get_pixel(x_p, y) };
+                let p = unsafe { *image.get_pixel(x_p, y) };
                 accumulate(&mut acc, &p, *k);
             }
 
@@ -292,7 +292,7 @@ where
             for (i, k) in kernel.iter().enumerate() {
                 let x_unchecked = (x as i32) + i as i32 - k_width / 2;
                 let x_p = min(x_unchecked, width as i32 - 1) as u32;
-                let p = unsafe { image.unsafe_get_pixel(x_p, y) };
+                let p = unsafe { *image.get_pixel(x_p, y) };
                 accumulate(&mut acc, &p, *k);
             }
 
@@ -332,7 +332,7 @@ where
                 for (i, k) in kernel.iter().enumerate() {
                     let y_unchecked = (y as i32) + i as i32 - k_height / 2;
                     let y_p = max(0, min(y_unchecked, height as i32 - 1)) as u32;
-                    let p = unsafe { image.unsafe_get_pixel(x, y_p) };
+                    let p = unsafe { *image.get_pixel(x, y_p) };
                     accumulate(&mut acc, &p, *k);
                 }
 
@@ -355,7 +355,7 @@ where
             for (i, k) in kernel.iter().enumerate() {
                 let y_unchecked = (y as i32) + i as i32 - k_height / 2;
                 let y_p = max(0, y_unchecked) as u32;
-                let p = unsafe { image.unsafe_get_pixel(x, y_p) };
+                let p = unsafe { *image.get_pixel(x, y_p) };
                 accumulate(&mut acc, &p, *k);
             }
 
@@ -373,7 +373,7 @@ where
             for (i, k) in kernel.iter().enumerate() {
                 let y_unchecked = (y as i32) + i as i32 - k_height / 2;
                 let y_p = y_unchecked as u32;
-                let p = unsafe { image.unsafe_get_pixel(x, y_p) };
+                let p = unsafe { *image.get_pixel(x, y_p) };
                 accumulate(&mut acc, &p, *k);
             }
 
@@ -391,7 +391,7 @@ where
             for (i, k) in kernel.iter().enumerate() {
                 let y_unchecked = (y as i32) + i as i32 - k_height / 2;
                 let y_p = min(y_unchecked, height as i32 - 1) as u32;
-                let p = unsafe { image.unsafe_get_pixel(x, y_p) };
+                let p = unsafe { *image.get_pixel(x, y_p) };
                 accumulate(&mut acc, &p, *k);
             }
 

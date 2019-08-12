@@ -174,15 +174,15 @@ where
     for y in 0..height {
         for x in 0..width {
             unsafe {
-                let h = horizontal.unsafe_get_pixel(x, y);
-                let v = vertical.unsafe_get_pixel(x, y);
+                let h = *horizontal.get_pixel(x, y);
+                let v = *vertical.get_pixel(x, y);
                 let mut p = ChannelMap::<P, u16>::black();
 
                 for (h, v, p) in multizip((h.channels(), v.channels(), p.channels_mut())) {
                     *p = gradient_magnitude(*h as f32, *v as f32);
                 }
 
-                out.unsafe_put_pixel(x, y, f(p));
+                out.put_pixel(x, y, f(p));
             }
         }
     }

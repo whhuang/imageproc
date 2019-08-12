@@ -117,7 +117,7 @@ where
         for x in 1..out_width {
             unsafe {
                 for c in 0..P::channel_count() {
-                    let pix: T = (image.unsafe_get_pixel(x - 1, y - 1).channels()[c as usize]).into();
+                    let pix: T = (image.get_pixel(x - 1, y - 1).channels()[c as usize]).into();
                     if square {
                         sum[c as usize] += pix * pix;
                     } else {
@@ -125,8 +125,8 @@ where
                     }
                 }
 
-                let above = out.unsafe_get_pixel(x, y - 1);
-                // For some reason there's no unsafe_get_pixel_mut, so to update the existing
+                let above = *out.get_pixel(x, y - 1);
+                // For some reason there's no get_pixel_mut, so to update the existing
                 // pixel here we need to use the method with bounds checking
                 let current = out.get_pixel_mut(x, y);
                 for c in 0..P::channel_count() {
@@ -326,17 +326,17 @@ pub fn row_running_sum(image: &GrayImage, row: u32, buffer: &mut [u32], padding:
     unsafe {
         let mut sum = 0;
         for x in 0..padding {
-            sum += image.unsafe_get_pixel(0, row)[0] as u32;
+            sum += image.get_pixel(0, row)[0] as u32;
             *buffer.get_unchecked_mut(x as usize) = sum;
         }
 
         for x in 0..width {
-            sum += image.unsafe_get_pixel(x, row)[0] as u32;
+            sum += image.get_pixel(x, row)[0] as u32;
             *buffer.get_unchecked_mut((x + padding) as usize) = sum;
         }
 
         for x in 0..padding {
-            sum += image.unsafe_get_pixel(width - 1, row)[0] as u32;
+            sum += image.get_pixel(width - 1, row)[0] as u32;
             *buffer.get_unchecked_mut((x + width + padding) as usize) = sum;
         }
     }
@@ -388,17 +388,17 @@ pub fn column_running_sum(image: &GrayImage, column: u32, buffer: &mut [u32], pa
     unsafe {
         let mut sum = 0;
         for y in 0..padding {
-            sum += image.unsafe_get_pixel(column, 0)[0] as u32;
+            sum += image.get_pixel(column, 0)[0] as u32;
             *buffer.get_unchecked_mut(y as usize) = sum;
         }
 
         for y in 0..height {
-            sum += image.unsafe_get_pixel(column, y)[0] as u32;
+            sum += image.get_pixel(column, y)[0] as u32;
             *buffer.get_unchecked_mut((y + padding) as usize) = sum;
         }
 
         for y in 0..padding {
-            sum += image.unsafe_get_pixel(column, height - 1)[0] as u32;
+            sum += image.get_pixel(column, height - 1)[0] as u32;
             *buffer.get_unchecked_mut((y + height + padding) as usize) = sum;
         }
     }

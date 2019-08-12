@@ -146,7 +146,7 @@ where
                 Interpolation::Bilinear => interpolate(image, px, py, default),
             };
             unsafe {
-                out.unsafe_put_pixel(x, y, pix);
+                out.put_pixel(x, y, pix);
             }
         }
     }
@@ -233,7 +233,7 @@ where
 
             unsafe {
                 let pix = nearest(image, px, py, default);
-                out.unsafe_put_pixel(x, y, pix);
+                out.put_pixel(x, y, pix);
             }
 
             px += cos_theta;
@@ -266,7 +266,7 @@ where
 
             let pix = interpolate(image, px, py, default);
             unsafe {
-                out.unsafe_put_pixel(x, y, pix);
+                out.put_pixel(x, y, pix);
             }
 
             px += cos_theta;
@@ -299,10 +299,8 @@ where
             let x_in = cmp::max(0, cmp::min(x as i32 - t.0, w - 1));
             let y_in = cmp::max(0, cmp::min(y as i32 - t.1, h - 1));
             // (x_in, y_in) and (x, y) are guaranteed to be in bounds
-            unsafe {
-                let p = image.unsafe_get_pixel(x_in as u32, y_in as u32);
-                out.unsafe_put_pixel(x, y, p);
-            }
+            let p = *image.get_pixel(x_in as u32, y_in as u32);
+            out.put_pixel(x, y, p);
         }
     }
 
@@ -352,14 +350,13 @@ where
     if left < 0f32 || right >= width as f32 || top < 0f32 || bottom >= height as f32 {
         default
     } else {
-        let (tl, tr, bl, br) = unsafe {
-            (
-                image.unsafe_get_pixel(left as u32, top as u32),
-                image.unsafe_get_pixel(right as u32, top as u32),
-                image.unsafe_get_pixel(left as u32, bottom as u32),
-                image.unsafe_get_pixel(right as u32, bottom as u32),
-            )
-        };
+        let (tl, tr, bl, br) =
+        (
+            *image.get_pixel(left as u32, top as u32),
+            *image.get_pixel(right as u32, top as u32),
+            *image.get_pixel(left as u32, bottom as u32),
+            *image.get_pixel(right as u32, bottom as u32),
+        );
         blend(tl, tr, bl, br, right_weight, bottom_weight)
     }
 }
@@ -373,7 +370,7 @@ fn nearest<P: Pixel + 'static>(image: &Image<P>, x: f32, y: f32, default: P) -> 
     if rx < 0f32 || rx >= width as f32 || ry < 0f32 || ry >= height as f32 {
         default
     } else {
-        unsafe { image.unsafe_get_pixel(rx as u32, ry as u32) }
+        *image.get_pixel(rx as u32, ry as u32)
     }
 }
 

@@ -98,58 +98,56 @@ pub(crate) enum DistanceFrom {
 pub(crate) fn distance_transform_impl(image: &mut GrayImage, norm: Norm, from: DistanceFrom) {
     let max_distance = Luma([min(image.width() + image.height(), 255u32) as u8]);
 
-    unsafe {
-        // Top-left to bottom-right
-        for y in 0..image.height() {
-            for x in 0..image.width() {
-                if from == DistanceFrom::Foreground {
-                    if image.unsafe_get_pixel(x, y)[0] > 0u8 {
-                        image.unsafe_put_pixel(x, y, Luma([0u8]));
-                        continue;
-                    }
-                } else if image.unsafe_get_pixel(x, y)[0] == 0u8 {
-                    image.unsafe_put_pixel(x, y, Luma([0u8]));
+    // Top-left to bottom-right
+    for y in 0..image.height() {
+        for x in 0..image.width() {
+            if from == DistanceFrom::Foreground {
+                if image.get_pixel(x, y)[0] > 0u8 {
+                    image.put_pixel(x, y, Luma([0u8]));
                     continue;
                 }
+            } else if image.get_pixel(x, y)[0] == 0u8 {
+                image.put_pixel(x, y, Luma([0u8]));
+                continue;
+            }
 
-                image.unsafe_put_pixel(x, y, max_distance);
+            image.put_pixel(x, y, max_distance);
 
-                if x > 0 {
-                    check(image, x, y, x - 1, y);
-                }
+            if x > 0 {
+                check(image, x, y, x - 1, y);
+            }
 
-                if y > 0 {
-                    check(image, x, y, x, y - 1);
+            if y > 0 {
+                check(image, x, y, x, y - 1);
 
-                    if norm == Norm::LInf {
-                        if x > 0 {
-                            check(image, x, y, x - 1, y - 1);
-                        }
-                        if x < image.width() - 1 {
-                            check(image, x, y, x + 1, y - 1);
-                        }
+                if norm == Norm::LInf {
+                    if x > 0 {
+                        check(image, x, y, x - 1, y - 1);
+                    }
+                    if x < image.width() - 1 {
+                        check(image, x, y, x + 1, y - 1);
                     }
                 }
             }
         }
+    }
 
-        // Bottom-right to top-left
-        for y in (0..image.height()).rev() {
-            for x in (0..image.width()).rev() {
-                if x < image.width() - 1 {
-                    check(image, x, y, x + 1, y);
-                }
+    // Bottom-right to top-left
+    for y in (0..image.height()).rev() {
+        for x in (0..image.width()).rev() {
+            if x < image.width() - 1 {
+                check(image, x, y, x + 1, y);
+            }
 
-                if y < image.height() - 1 {
-                    check(image, x, y, x, y + 1);
+            if y < image.height() - 1 {
+                check(image, x, y, x, y + 1);
 
-                    if norm == Norm::LInf {
-                        if x < image.width() - 1 {
-                            check(image, x, y, x + 1, y + 1);
-                        }
-                        if x > 0 {
-                            check(image, x, y, x - 1, y + 1);
-                        }
+                if norm == Norm::LInf {
+                    if x < image.width() - 1 {
+                        check(image, x, y, x + 1, y + 1);
+                    }
+                    if x > 0 {
+                        check(image, x, y, x - 1, y + 1);
                     }
                 }
             }
@@ -160,17 +158,17 @@ pub(crate) fn distance_transform_impl(image: &mut GrayImage, norm: Norm, from: D
 // Sets image[current_x, current_y] to min(image[current_x, current_y], image[candidate_x, candidate_y] + 1).
 // We avoid overflow by performing the arithmetic at type u16. We could use u8::saturating_add instead, but
 // (based on the benchmarks tests) this appears to be considerably slower.
-unsafe fn check(
+fn check(
     image: &mut GrayImage,
     current_x: u32,
     current_y: u32,
     candidate_x: u32,
     candidate_y: u32,
 ) {
-    let current = image.unsafe_get_pixel(current_x, current_y)[0] as u16;
-    let candidate_incr = image.unsafe_get_pixel(candidate_x, candidate_y)[0] as u16 + 1;
+    let current = image.get_pixel(current_x, current_y)[0] as u16;
+    let candidate_incr = image.get_pixel(candidate_x, candidate_y)[0] as u16 + 1;
     if candidate_incr < current {
-        image.unsafe_put_pixel(current_x, current_y, Luma([candidate_incr as u8]));
+        image.put_pixel(current_x, current_y, Luma([candidate_incr as u8]));
     }
 }
 
@@ -244,7 +242,7 @@ struct Row<'a> {
 
 impl<'a> Sink for Row<'a> {
     fn put(&mut self, idx: usize, value: f64) {
-        unsafe { self.image.unsafe_put_pixel(idx as u32, self.row, Luma([value])); }
+        unsafe { self.image.put_pixel(idx as u32, self.row, Luma([value])); }
     }
     fn len(&self) -> usize {
         self.image.width() as usize
@@ -258,7 +256,7 @@ struct ColumnMut<'a> {
 
 impl<'a> Sink for ColumnMut<'a> {
     fn put(&mut self, idx: usize, value: f64) {
-        unsafe { self.image.unsafe_put_pixel(self.column, idx as u32, Luma([value])); }
+        unsafe { self.image.put_pixel(self.column, idx as u32, Luma([value])); }
     }
     fn len(&self) -> usize {
         self.image.height() as usize
@@ -290,7 +288,7 @@ struct Column<'a> {
 
 impl<'a> Source for Column<'a> {
     fn get(&self, idx: usize) -> f64 {
-        let pixel = unsafe { self.image.unsafe_get_pixel(self.column, idx as u32)[0] as f64 };
+        let pixel = self.image.get_pixel(self.column, idx as u32)[0] as f64;
         if pixel > 0f64 { 0f64 } else { f64::INFINITY }
     }
     fn len(&self) -> usize {

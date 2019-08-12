@@ -55,7 +55,7 @@ pub fn detect_lines(image: &GrayImage, options: LineDetectionOptions) -> Vec<Pol
 
     for y in 0..height {
         for x in 0..width {
-            let p = unsafe { image.unsafe_get_pixel(x, y)[0] };
+            let p = unsafe { image.get_pixel(x, y)[0] };
 
             if p > 0 {
                 for (m, (c, s)) in lut.iter().enumerate() {
@@ -64,8 +64,8 @@ pub fn detect_lines(image: &GrayImage, options: LineDetectionOptions) -> Vec<Pol
 
                     if d <= 2 * rmax && d >= 0 {
                         unsafe {
-                            let vote_incr = acc.unsafe_get_pixel(d as u32, m as u32)[0] + 1;
-                            acc.unsafe_put_pixel(d as u32, m as u32, Luma([vote_incr]));
+                            let vote_incr = acc.get_pixel(d as u32, m as u32)[0] + 1;
+                            acc.put_pixel(d as u32, m as u32, Luma([vote_incr]));
                         }
                     }
                 }
@@ -79,7 +79,7 @@ pub fn detect_lines(image: &GrayImage, options: LineDetectionOptions) -> Vec<Pol
 
     for m in 0..acc_sup.height() {
         for r in 0..acc_sup.width() {
-            let votes = unsafe { acc_sup.unsafe_get_pixel(r, m)[0] };
+            let votes = unsafe { acc_sup.get_pixel(r, m)[0] };
             if votes >= options.vote_threshold {
                 let line = PolarLine {
                     r: (r as i32 - rmax) as f32,

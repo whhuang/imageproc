@@ -237,8 +237,8 @@ impl HaarFeature {
     }
 }
 
-unsafe fn read(integral: &Image<Luma<u32>>, location: (u8, u8)) -> i32 {
-    integral.unsafe_get_pixel(location.0 as u32, location.1 as u32)[0] as i32
+fn read(integral: &Image<Luma<u32>>, location: (u8, u8)) -> i32 {
+    integral.get_pixel(location.0 as u32, location.1 as u32)[0] as i32
 }
 
 // The total width and height of a feature with the given type and block size.

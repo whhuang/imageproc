@@ -35,7 +35,7 @@ where
             // These mins are necessary for when radius > min(width, height)
             for cy in y..cmp::min(height, y + radius + 1) {
                 for cx in x..cmp::min(width, x + radius + 1) {
-                    let ci = unsafe { image.unsafe_get_pixel(cx, cy)[0] };
+                    let ci = unsafe { image.get_pixel(cx, cy)[0] };
                     if ci < mi {
                         continue;
                     }
@@ -67,7 +67,7 @@ where
             failed |= contains_greater_value(image, best_x, best_y, mi, y2, y3, x0, x3);
 
             if !failed {
-                unsafe { out.unsafe_put_pixel(best_x, best_y, Luma([mi])) };
+                unsafe { out.put_pixel(best_x, best_y, Luma([mi])) };
             }
         }
     }
@@ -94,7 +94,7 @@ where
 {
     for cy in y_lower..y_upper {
         for cx in x_lower..x_upper {
-            let ci = unsafe { image.unsafe_get_pixel(cx, cy)[0] };
+            let ci = unsafe { image.get_pixel(cx, cy)[0] };
             if ci < v {
                 continue;
             }

@@ -54,8 +54,8 @@ pub fn match_template(image: &GrayImage, template: &GrayImage, method: MatchTemp
 
             for dy in 0..template_height {
                 for dx in 0..template_width {
-                    let image_value = unsafe { image.unsafe_get_pixel(x + dx, y + dy)[0] as f32 };
-                    let template_value = unsafe { template.unsafe_get_pixel(dx, dy)[0] as f32 };
+                    let image_value = unsafe { image.get_pixel(x + dx, y + dy)[0] as f32 };
+                    let template_value = unsafe { template.get_pixel(dx, dy)[0] as f32 };
 
                     use MatchTemplateMethod::*;
 

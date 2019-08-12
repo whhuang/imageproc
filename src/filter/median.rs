@@ -249,10 +249,10 @@ impl HistSet {
     where
         P: Pixel<Subpixel=u8> + 'static
     {
-        unsafe {
-            let pixel = image.unsafe_get_pixel(x, y);
-            let channels = pixel.channels();
-            for c in 0..channels.len() {
+        let pixel = *image.get_pixel(x, y);
+        let channels = pixel.channels();
+        for c in 0..channels.len() {
+            unsafe {
                 let p = *channels.get_unchecked(c) as usize;
                 let hist = self.data.get_unchecked_mut(c);
                 *hist.get_unchecked_mut(p) += 1;
@@ -265,7 +265,7 @@ impl HistSet {
         P: Pixel<Subpixel=u8> + 'static
     {
         unsafe {
-            let pixel = image.unsafe_get_pixel(x, y);
+            let pixel = *image.get_pixel(x, y);
             let channels = pixel.channels();
             for c in 0..channels.len() {
                 let p = *channels.get_unchecked(c) as usize;

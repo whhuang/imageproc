@@ -141,15 +141,15 @@ fn is_corner_fast9(image: &GrayImage, threshold: u8, x: u32, y: u32) -> bool {
         return false;
     }
 
-    let c = unsafe { image.unsafe_get_pixel(x, y)[0] };
+    let c = unsafe { image.get_pixel(x, y)[0] };
     let low_thresh: i16 = c as i16 - threshold as i16;
     let high_thresh: i16 = c as i16 + threshold as i16;
 
     // See Note [FAST circle labels]
-    let p0 = unsafe { image.unsafe_get_pixel(x, y - 3)[0] as i16 };
-    let p8 = unsafe { image.unsafe_get_pixel(x, y + 3)[0] as i16 };
-    let p4 = unsafe { image.unsafe_get_pixel(x + 3, y)[0] as i16 };
-    let p12 = unsafe { image.unsafe_get_pixel(x - 3, y)[0] as i16 };
+    let p0 = unsafe { image.get_pixel(x, y - 3)[0] as i16 };
+    let p8 = unsafe { image.get_pixel(x, y + 3)[0] as i16 };
+    let p4 = unsafe { image.get_pixel(x + 3, y)[0] as i16 };
+    let p12 = unsafe { image.get_pixel(x - 3, y)[0] as i16 };
 
     let above = 
         (p0 > high_thresh && p4 > high_thresh) ||
@@ -182,13 +182,13 @@ fn is_corner_fast12(image: &GrayImage, threshold: u8, x: u32, y: u32) -> bool {
         return false;
     }
 
-    let c = unsafe { image.unsafe_get_pixel(x, y)[0] };
+    let c = unsafe { image.get_pixel(x, y)[0] };
     let low_thresh: i16 = c as i16 - threshold as i16;
     let high_thresh: i16 = c as i16 + threshold as i16;
 
     // See Note [FAST circle labels]
-    let p0 = unsafe { image.unsafe_get_pixel(x, y - 3)[0] as i16 };
-    let p8 = unsafe { image.unsafe_get_pixel(x, y + 3)[0] as i16 };
+    let p0 = unsafe { image.get_pixel(x, y - 3)[0] as i16 };
+    let p8 = unsafe { image.get_pixel(x, y + 3)[0] as i16 };
 
     let mut above = p0 > high_thresh && p8 > high_thresh;
     let mut below = p0 < low_thresh && p8 < low_thresh;
@@ -197,8 +197,8 @@ fn is_corner_fast12(image: &GrayImage, threshold: u8, x: u32, y: u32) -> bool {
         return false;
     }
 
-    let p4 = unsafe { image.unsafe_get_pixel(x + 3, y)[0] as i16 };
-    let p12 = unsafe { image.unsafe_get_pixel(x - 3, y)[0] as i16 };
+    let p4 = unsafe { image.get_pixel(x + 3, y)[0] as i16 };
+    let p12 = unsafe { image.get_pixel(x - 3, y)[0] as i16 };
 
     above = above && ((p4 > high_thresh) || (p12 > high_thresh));
     below = below && ((p4 < low_thresh) || (p12 < low_thresh));
@@ -235,21 +235,21 @@ unsafe fn get_circle(
 ) -> [i16; 16] {
     [
         p0,
-        image.unsafe_get_pixel(x + 1, y - 3)[0] as i16,
-        image.unsafe_get_pixel(x + 2, y - 2)[0] as i16,
-        image.unsafe_get_pixel(x + 3, y - 1)[0] as i16,
+        image.get_pixel(x + 1, y - 3)[0] as i16,
+        image.get_pixel(x + 2, y - 2)[0] as i16,
+        image.get_pixel(x + 3, y - 1)[0] as i16,
         p4,
-        image.unsafe_get_pixel(x + 3, y + 1)[0] as i16,
-        image.unsafe_get_pixel(x + 2, y + 2)[0] as i16,
-        image.unsafe_get_pixel(x + 1, y + 3)[0] as i16,
+        image.get_pixel(x + 3, y + 1)[0] as i16,
+        image.get_pixel(x + 2, y + 2)[0] as i16,
+        image.get_pixel(x + 1, y + 3)[0] as i16,
         p8,
-        image.unsafe_get_pixel(x - 1, y + 3)[0] as i16,
-        image.unsafe_get_pixel(x - 2, y + 2)[0] as i16,
-        image.unsafe_get_pixel(x - 3, y + 1)[0] as i16,
+        image.get_pixel(x - 1, y + 3)[0] as i16,
+        image.get_pixel(x - 2, y + 2)[0] as i16,
+        image.get_pixel(x - 3, y + 1)[0] as i16,
         p12,
-        image.unsafe_get_pixel(x - 3, y - 1)[0] as i16,
-        image.unsafe_get_pixel(x - 2, y - 2)[0] as i16,
-        image.unsafe_get_pixel(x - 1, y - 3)[0] as i16,
+        image.get_pixel(x - 3, y - 1)[0] as i16,
+        image.get_pixel(x - 2, y - 2)[0] as i16,
+        image.get_pixel(x - 1, y - 3)[0] as i16,
     ]
 }
 

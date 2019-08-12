@@ -47,7 +47,7 @@ where
     // TODO: It might be better to make this function private, and
     // TODO: require the caller to only provide valid x and y coordinates
     // TODO: the function may probably need to be unsafe then to leverage
-    // TODO: on `unsafe_get_pixel`
+    // TODO: on `get_pixel`
     if x == 0 || x >= width - 1 || y == 0 || y >= height - 1 {
         return None;
     }
@@ -68,16 +68,16 @@ where
     // is strictly brighter than the neighbor in position n.
     let (center, neighbors) = unsafe {
         (
-            image.unsafe_get_pixel(x, y)[0],
+            image.get_pixel(x, y)[0],
             [
-                image.unsafe_get_pixel(x, y - 1)[0],
-                image.unsafe_get_pixel(x + 1, y - 1)[0],
-                image.unsafe_get_pixel(x + 1, y)[0],
-                image.unsafe_get_pixel(x + 1, y + 1)[0],
-                image.unsafe_get_pixel(x, y + 1)[0],
-                image.unsafe_get_pixel(x - 1, y + 1)[0],
-                image.unsafe_get_pixel(x - 1, y)[0],
-                image.unsafe_get_pixel(x - 1, y - 1)[0],
+                image.get_pixel(x, y - 1)[0],
+                image.get_pixel(x + 1, y - 1)[0],
+                image.get_pixel(x + 1, y)[0],
+                image.get_pixel(x + 1, y + 1)[0],
+                image.get_pixel(x, y + 1)[0],
+                image.get_pixel(x - 1, y + 1)[0],
+                image.get_pixel(x - 1, y)[0],
+                image.get_pixel(x - 1, y - 1)[0],
             ],
         )
     };

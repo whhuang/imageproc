@@ -81,24 +81,23 @@ fn non_maximum_suppression(
             };
 
             // Get the two perpendicular neighbors.
-            let (cmp1, cmp2) = unsafe {
+            let (cmp1, cmp2) = 
                 match clamped_angle {
-                    0 => (g.unsafe_get_pixel(x - 1, y), g.unsafe_get_pixel(x + 1, y)),
+                    0 => (*g.get_pixel(x - 1, y), *g.get_pixel(x + 1, y)),
                     45 => {
                         (
-                            g.unsafe_get_pixel(x + 1, y + 1),
-                            g.unsafe_get_pixel(x - 1, y - 1),
+                            *g.get_pixel(x + 1, y + 1),
+                            *g.get_pixel(x - 1, y - 1),
                         )
                     }
-                    90 => (g.unsafe_get_pixel(x, y - 1), g.unsafe_get_pixel(x, y + 1)),
+                    90 => (*g.get_pixel(x, y - 1), *g.get_pixel(x, y + 1)),
                     135 => {
                         (
-                            g.unsafe_get_pixel(x - 1, y + 1),
-                            g.unsafe_get_pixel(x + 1, y - 1),
+                            *g.get_pixel(x - 1, y + 1),
+                            *g.get_pixel(x + 1, y - 1),
                         )
                     }
                     _ => unreachable!(),
-                }
             };
             let pixel = *g.get_pixel(x, y);
             // If the pixel is not a local maximum, suppress it.
