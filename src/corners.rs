@@ -49,6 +49,7 @@ impl Score for Corner {
 /// I - t, for some user-provided threshold t. The score of a corner is
 /// the greatest threshold for which the given pixel still qualifies as
 /// a corner.
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Fast {
     /// Corners require a section of length as least nine.
     Nine,
